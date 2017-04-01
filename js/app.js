@@ -59,6 +59,7 @@
 		filterByType: function () {
 			if (this.filterType === "all") {
 				this.collection.reset(CONTACTS);
+				contactsRouter.navigate("filter/all");
 			} else {
 				this.collection.reset(CONTACTS, { silent: true });
 				var filterType = this.filterType,
@@ -66,6 +67,7 @@
 						return item.get("type").toLowerCase() === filterType;
 					});
 					this.collection.reset(filtered);
+					contactsRouter.navigate("filter/" + filterType);
 			}
 		},
 
@@ -76,7 +78,7 @@
 		createSelect: function () {
 			var filter = this.$el.find("#filter"),
 				select = $("<select/>", {
-					html: "<option>all</Option>"
+					html: "<option value='all'>all</Option>"
 				});
 
 			_.each(this.getTypes(), function (item) {
@@ -98,5 +100,18 @@
 		}
 	});
 
+	var ContactsRouter = Backbone.Router.extend({
+		routes: {
+			"filter/:type": "urlFilter"
+		},
+
+		urlFilter: function (type) {
+			directory.filter = type;
+			directory.trigger("change:filterType");
+		}
+	});
+
 	var directory = new DirectoryView();
+	var contactsRouter = new ContactsRouter();
+	Backbone.history.start();
 }());
