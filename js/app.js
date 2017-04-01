@@ -5,7 +5,12 @@
 	// The model that is used for each contact
 	var Contact = Backbone.Model.extend({
 		defaults: {
-			photo: "./img/placeholder.png"
+			photo: "./img/placeholder.png",
+			name: "",
+			address: "",
+			tel: "",
+			email: "",
+			type: ""
 		}
 	});
 
@@ -38,6 +43,7 @@
 
 			this.on("change:filterType", this.filterByType, this);
 			this.collection.on("reset", this.render, this);
+			this.collection.on("add", this.renderContact, this);
 		},
 
 		render: function () {
@@ -48,12 +54,33 @@
 		},
 
 		events: {
-			"change #filter select": "setFilter"
+			"change #filter select": "setFilter",
+			"click #add": "addContact"
 		},
 
 		setFilter: function (e) {
 			this.filterType = e.currentTarget.value;
 			this.trigger("change:filterType");
+		},
+
+		addContact: function (e) {
+			e.preventDefault();
+
+			var newContact = {};
+			$("#addContact").children("input").each(function (id, element) {
+				if ($(element).val() !== "") {
+					newContact[element.id] = $(element).val();
+				}
+			});
+
+			CONTACTS.push(newContact);
+
+			if (_.indexOf(this.getTypes(), newContact.type) === -1) {
+				this.collection.add(new Contact(newContact));
+				this.$el.find("#filter").find("select").remove().end().append(this.createSelect());
+			} else {
+				this.collection.add(new Contact(newContact));
+			}
 		},
 
 		filterByType: function () {
