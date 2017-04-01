@@ -1,5 +1,5 @@
 
-(function ($) {
+(function () {
 	'use strict';
 
 	// The model that is used for each contact
@@ -27,4 +27,29 @@
 			return this;
 		}
 	});
-}(jquery));
+
+	var DirectoryView = Backbone.View.extend({
+		el: $("#contacts"),
+
+		initialize: function () {
+			this.collection = new Directory(CONTACTS);
+			this.render();
+		},
+
+		render: function () {
+			var that = this;
+			_.each(this.collection.models, function (model) {
+				that.renderContact(model);
+			}, this);
+		},
+
+		renderContact: function (model) {
+			var contactView = new ContactView({
+				model: model
+			});
+			this.$el.append(contactView.render().el);
+		}
+	});
+
+	var directory = new DirectoryView();
+}());
