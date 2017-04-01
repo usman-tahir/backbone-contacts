@@ -18,28 +18,28 @@ var CONTACTS = [
 		"address": "Sample Address",
 		"tel": "1234567890",
 		"email": "mail@example.com",
-		"type": "family"
+		"type": "friend"
 	},
 	{
 		"name": "Contact 4",
 		"address": "Sample Address",
 		"tel": "1234567890",
 		"email": "mail@example.com",
-		"type": "family"
+		"type": "coworker"
 	},
 	{
 		"name": "Contact 5",
 		"address": "Sample Address",
 		"tel": "1234567890",
 		"email": "mail@example.com",
-		"type": "family"
+		"type": "coworker"
 	},
 	{
 		"name": "Contact 6",
 		"address": "Sample Address",
 		"tel": "1234567890",
 		"email": "mail@example.com",
-		"type": "family"
+		"type": "friend"
 	},
 	{
 		"name": "Contact 7",
