@@ -26,13 +26,19 @@
 		
 		template: _.template($("#contactTemplate").html()),
 
+		editTemplate: _.template($("#contactEditTemplate").html()),
+
 		render: function () {
 			this.$el.html(this.template(this.model.toJSON()));
 			return this;
 		},
 
 		events: {
-			"click button.delete": "deleteContact"
+			"click button.delete": "deleteContact",
+			"click button.edit": "editContact",
+			"change select.type": "addType",
+			"click button.save": "saveEdits",
+			"click button.cancel": "cancelEdit"
 		},
 
 		deleteContact: function () {
@@ -43,6 +49,63 @@
 			if (_.indexOf(directory.getTypes(), removedType) === -1) {
 				directory.$el.find("#filter select").children("[value='" + removedType + "']").remove();
 			}
+		},
+
+		editContact: function () {
+			this.$el.html(this.editTemplate(this.model.toJSON()));
+			var newOptions = $("<option/>", {
+				html: "<em>Add new ...</em>",
+				value: "addType"
+			});
+
+			this.select = directory.createSelect().addClass("type")
+				.val(this.$el.find("#type").val()).append(newOptions)
+				.insertAfter(this.$el.find(".name"));
+
+			this.$el.find("input[type='hidden']").remove();
+		},
+
+		addType: function () {
+			if (this.select.val() === "addType") {
+				this.select.remove();
+
+				$("<input/>", {
+					"class": "type"
+				}).insertAfter(this.$el.find(".name")).focus();
+			}
+		},
+
+		saveEdits: function (e) {
+			e.preventDefault();
+
+			var formData = {},
+				previous = this.model.previousAttributes();
+
+			$(e.target).closest("form").find(":input").not("button").add(".photo").each(function () {
+				var element = $(this);
+				formData[element.attr("class")] = element.val();
+			});
+
+			if (formData.photo === "") {
+				delete formData.photo;
+			}
+
+			this.model.set(formData);
+			this.render();
+
+			if (previous.photo === "/img/placeholder.png") {
+				delete previous.photo;
+			}
+
+			_.each(contacts, function (contact) {
+				if (_.isEqual(contact, previous)) {
+					CONTACTS.splice(_.indexOf(CONTACTS, contact), 1, formData);
+				}
+			});
+		},
+
+		cancelEdit: function () {
+			this.render();
 		}
 	});
 
